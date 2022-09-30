@@ -29,7 +29,7 @@ from confluent_kafka.schema_registry.json_schema import JSONSerializer
 import pandas as pd
 from typing import List
 
-FILE_PATH = "cardekho_dataset.csv"
+FILE_PATH = "/Users/shashankmishra/Desktop/Kafka Classes/Confluen Kafka Setup/Confluent-Kafka-Setup/cardekho_dataset.csv"
 columns=['car_name', 'brand', 'model', 'vehicle_age', 'km_driven', 'seller_type',
        'fuel_type', 'transmission_type', 'mileage', 'engine', 'max_power',
        'seats', 'selling_price']
@@ -38,8 +38,8 @@ API_KEY = 'HNUA2KUYENIP44PV'
 ENDPOINT_SCHEMA_URL  = 'https://psrc-35wr2.us-central1.gcp.confluent.cloud'
 API_SECRET_KEY = 'TH5n14kG1JAD6b8rmf92Y6wyXPY66De2kzbiZUS0jytRfkxpEM4rWdlGVSsM/nFR'
 BOOTSTRAP_SERVER = 'pkc-lzvrd.us-west4.gcp.confluent.cloud:9092'
-SECURITY_PROTOCOL = 'SASL_PLAINTEXT'
-SSL_MACHENISM = 'SASL_SSL'
+SECURITY_PROTOCOL = 'SASL_SSL'
+SSL_MACHENISM = 'PLAIN'
 SCHEMA_REGISTRY_API_KEY = 'PBEUUAHOC2GTPJWT'
 SCHEMA_REGISTRY_API_SECRET = 'EuAq+lp9CJYCs2n/TKOdhk9C2bbMl0ZRyE6KfYJ0v2Ng6anqHnLzqAtCjSwMSE+Y'
 
@@ -54,7 +54,6 @@ def sasl_conf():
                 'sasl.username': API_KEY,
                 'sasl.password': API_SECRET_KEY
                 }
-    print(sasl_conf)
     return sasl_conf
 
 
@@ -76,7 +75,6 @@ class Car:
    
     @staticmethod
     def dict_to_car(data:dict,ctx):
-        print(data,ctx)
         return Car(record=data)
 
     def __str__(self):
@@ -116,9 +114,9 @@ def delivery_report(err, msg):
     """
 
     if err is not None:
-        logging.info("Delivery failed for User record {}: {}".format(msg.key(), err))
+        print("Delivery failed for User record {}: {}".format(msg.key(), err))
         return
-    logging.info('User record {} successfully produced to {} [{}] at offset {}'.format(
+    print('User record {} successfully produced to {} [{}] at offset {}'.format(
         msg.key(), msg.topic(), msg.partition(), msg.offset()))
 
 
@@ -204,10 +202,10 @@ def main(topic):
         for car in get_car_instance(file_path=FILE_PATH):
 
             print(car)
-            # producer.produce(topic=topic,
-            #                 key=string_serializer(str(uuid4())),
-            #                 value=json_serializer(car),
-            #                 on_delivery=delivery_report)
+            producer.produce(topic=topic,
+                            key=string_serializer(str(uuid4()), car_to_dict),
+                            value=json_serializer(car, SerializationContext(topic, MessageField.VALUE)),
+                            on_delivery=delivery_report)
             break
     except KeyboardInterrupt:
         pass
