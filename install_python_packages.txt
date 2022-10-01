@@ -1,0 +1,12 @@
+1. Install Python3 version (Check for Windows, Linux and Mac)
+
+2. If not then install pip3 package explicitly
+
+3. pip3 install confluent_kafka
+4. pip3 install pandas
+5. pip3 install requests
+
+
+# During the execution of final code you might face error of "No Module name jsonschema"
+
+# pip3 install jsonschema
